@@ -7,15 +7,15 @@ Below is a proposal for SetQL, a query language based on set-builder notation.
 | First-Order Logic | First-Order QL     | Definition                                                                                                                                   |
 | ----------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | 𝓠                 | /Q                 | The 'query set', ie. the resultant query                                                                                                     |
-| ∈                 | /e                 | Preceded by a bounded variable v and followed by a set S, this represents 'v in S'. Can also be used for substring and sub-array conditions. |
+| ∈                 | /e                 | Preceded by a variable v and followed by a set S, this represents 'v in S'. Can also be used for substring and sub-array conditions.         |
 | ∑                 | /S                 | Followed by a set, this represents the sum of a set of real numbers                                                                          |
 | Π                 | /P                 | Followed by a set, this represents the product of a set of real numbers                                                                      |
 | &#124;            | &#124;             | Absolute value for a number or the size of a set                                                                                             |
 | ∧                 | ^                  | Conjunction of two statements                                                                                                                |
-| ∨                 | v                  | Disjunction of two statements                                                                                                                |
+| ∨                 | /v                 | Disjunction of two statements                                                                                                                |
 | ⊆                 | /c                 | Subset of a set                                                                                                                              |
 | ≤, ≥, ≠, =, >, <  | <=,>=, !=, =, >, < | Represents comparison operators for scalars and strings                                                                                      |
-| idx               | idx                | Index of an element in a set                                                                                                                 |
+| _                 | _                  | Preceded by a set member v and followed by a variable i, this represents the index of v in its set                                           |
 
 ### Fields
 
@@ -42,26 +42,10 @@ where n is a number representing the size of Q
 ### Set Ordering
 
 ```
-/Q = {v /e S | f(v) >= g(w) ^ idx(v) > idx(w) ^ w /e S}
+/Q = {v_i /e S | f(v_i) >= f(v_(i+1))}
 ```
 
 where f, g are fields of items in S, and v, w are elements of S
-
-### Introduction of Fields
-
-```
-/Q = {v /e S | f(v) = e}
-```
-
-where e is some expression, S is a set and f is a field not defined in items of S
-
-### Introduction of Objects
-
-```
-/Q = {v | f(v) = e ^ g(v) = d ^ h(v) = c}
-```
-
-where f, g, h are fields, e, d, c are expressions, and Q is the set that will hold the objects
 
 ### Expressions on Elements
 
@@ -74,10 +58,18 @@ where e is an expression
 ### Functions on Sets
 
 ```
-/Q = {v | f(v) = h({e | w /in S})}
+/Q = {v | f(v) = h({e | w /e S})}
 ```
 
 where g is a field of elements of S and h is a function on the set with elements of the type g, a.k.a. an aggregation
+
+### Introduction of Fields
+
+```
+/Q = {v /e S | f(v) = e}
+```
+
+where e is some expression, S is a set and f is a field not defined in items of S
 
 ###
 
@@ -92,13 +84,25 @@ where g is a field of elements of S and h is a function on the set with elements
 ### Query first item by condition
 
 ```
-/Q /c {v /e S | f(v) = 2} ^ |Q| = 1
+/Q /c {v /e S | f(v) = 2} ^ |/Q| = 1
 ```
 
 ### Query first 'n' items by a condition
 
 ```
-/Q /c {v /e S | f(v) = 2} ^ |Q| = n
+/Q /c {v /e S | f(v) = 2} ^ |/Q| = n
+```
+
+### Query first 'n' items sorted by f
+
+```
+/Q = {v_i /e S | f(v_i) >= f(v_(i+1))} ^ |/Q| = n
+```
+
+### Query only some fields of a set
+
+```
+/Q = {v | w /e S | f(v) = f(w) ^ g(v) = g(w)}
 ```
 
 ### Aggregation with max accumulator grouped by some field
@@ -113,16 +117,32 @@ where g is a field of elements of S and h is a function on the set with elements
 /Q = {v | sum_f(v) = /S({f(w) | w /e S ^ g(v) = g(w)})}
 ```
 
+### Aggregation with filter then count accumulator
+
+```
+/Q = {v | count(v) = |{w /e S | g(v) = g(w) ^ h(w) < 100}|}
+```
+
+# Future Plans
+
+### Introduction of Objects
+
+```
+/Q = {v | f(v) = e ^ g(v) = d ^ h(v) = c}
+```
+
+where f, g, h are fields, e, d, c are expressions, and Q is the set that will hold the objects
+
 ### Aggregation with product accumulator
 
 ```
 /Q = {v | prod_f(v) = /P({f(w) | w /e S ^ g(v) = g(w)})}
 ```
 
-### Aggregation with filter then count accumulator
+### Left join and selecting certain fields from the second table
 
 ```
-/Q = {v | count(v) = |{w /e S | g(v) = g(w) ^ h(w) < 100}|}
+/Q = {v /e S | w /e T ^ f(v) = f(w)}
 ```
 
 # Implicit Conditions on Sets

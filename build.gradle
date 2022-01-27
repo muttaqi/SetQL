@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
+    id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
+    id 'application'
+}
+
+group 'org.setql'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+    main.kotlin.srcDirs = [ 'src' ]
+    main.resources.srcDirs = [ 'src/resources' ]
+}
+
+dependencies {
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-server-netty:$ktor_version"
+    implementation "ch.qos.logback:logback-classic:$logback_version"
+    implementation "io.ktor:ktor-serialization:$ktor_version"
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+}
+
+application {
+    mainClassName = 'org.setql.Server'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "14"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "14"
+}
+
+application {
+    mainClassName = 'org.setql.server.ServerKt'
+}
+
+apply plugin: 'idea'

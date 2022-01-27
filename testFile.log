@@ -1,0 +1,42 @@
+2021-12-04 20:44:28.501 [main] TRACE Application - {
+    # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 6
+    "application" : {
+        # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 7
+        "modules" : [
+            # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 7
+            "org.setql.server.ServerKt.module"
+        ]
+    },
+    # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 2
+    "deployment" : {
+        # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 3
+        "port" : 8080
+    },
+    # Content hidden
+    "security" : "***"
+}
+
+2021-12-04 20:44:28.584 [main] INFO  Application - Autoreload is disabled because the development mode is off.
+2021-12-04 20:44:29.117 [main] INFO  Application - Responding at http://0.0.0.0:8080
+2021-12-04 20:44:29.119 [main] INFO  Application - Application started in 0.553 seconds.
+2021-12-04 20:45:41.453 [main] TRACE Application - {
+    # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 6
+    "application" : {
+        # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 7
+        "modules" : [
+            # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 7
+            "org.setql.server.ServerKt.module"
+        ]
+    },
+    # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 2
+    "deployment" : {
+        # application.conf @ file:/C:/Users/12265/setql/build/resources/main/application.conf: 3
+        "port" : 8080
+    },
+    # Content hidden
+    "security" : "***"
+}
+
+2021-12-04 20:45:41.577 [main] INFO  Application - Autoreload is disabled because the development mode is off.
+2021-12-04 20:45:42.317 [main] INFO  Application - Responding at http://0.0.0.0:8080
+2021-12-04 20:45:42.319 [main] INFO  Application - Application started in 0.769 seconds.
