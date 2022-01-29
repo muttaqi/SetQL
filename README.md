@@ -93,10 +93,10 @@ where e is some expression, S is a set and f is a field not defined in items of 
 /Q /c {v /e S | f(v) = 2} ^ |/Q| = n
 ```
 
-### Query first 'n' items sorted by f
+### Query first 'n' items sorted by f descending
 
 ```
-/Q = {v_i /e S | f(v_i) >= f(v_(i+1))} ^ |/Q| = n
+/Q = {v_i /e S | f(v_i) >= f(v_i+1)} ^ |/Q| = n
 ```
 
 ### Query only some fields of a set

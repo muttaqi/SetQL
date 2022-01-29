@@ -237,6 +237,10 @@ fun parseConditions(s: String, i_: Int): Pair<Array<Condition>, Int> {
 
 fun runQuery(input: String): String {
     println("runQuery $input")
-    return getSortByAndOrder(parseConditions(input, 0).first) + "\n"
-    return "[" + parseConditions(input, 0).first.map {e -> e.toJSON()}.joinToString() + "]\n"
+    var conds = parseConditions(input, 0).first
+    var sql = generateMySql(conds)
+
+    return sql
+    //for getting query length decrease
+    //return "${input.filter { c -> c != ' ' && c != '/'}.length.toFloat()/sql.filter { c -> c != '\n' }.length}\n"
 }

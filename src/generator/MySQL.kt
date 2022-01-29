@@ -33,7 +33,7 @@ fun getFields(setql: Array<Condition>): String {
 
                                 if (aggregatedSet is Set && aggregatedSet.memberVariable != null) {
                                     var aggregatedVariable = aggregatedSet.memberVariable
-                                    fields += Function.fieldAggregatorToSQL[value.label]!! + "(" + aggregatedVariable?.label!! + ")"
+                                    fields += "${Function.fieldAggregatorToSQL[value.label]!!}(${aggregatedVariable?.label!!}) AS ${func.label}"
                                     continue
                                 }
                             }
@@ -43,7 +43,7 @@ fun getFields(setql: Array<Condition>): String {
 
                                 if (aggregatedSet is Set && aggregatedSet.memberCondition != null) {
                                     var aggregatedMember = aggregatedSet.memberCondition
-                                    fields += Function.setAggregatorToSQL[value.label]!! + "(*)"
+                                    fields += "${Function.setAggregatorToSQL[value.label]!!}(*) AS ${func.label}"
                                     continue
                                 }
                             }
@@ -123,7 +123,7 @@ fun getGroupBy(setql: Array<Condition>): String {
                                         var params = aggregatedSetCond.variable1.parameters.map { e -> e.label } + aggregatedSetCond.variable2.parameters.map { e -> e.label }
 
                                         if (params.contains(setMember.label) && fields[0] == fields[1]) {
-                                            return "GROUP BY " + fields[0]
+                                            return "GROUP BY ${fields[0]}\n"
                                         }
                                     }
                                 }
@@ -138,8 +138,39 @@ fun getGroupBy(setql: Array<Condition>): String {
     return ""
 }
 
+fun getConditionsFromSet(set: Set): Array<String> {
+    var sqlConds = arrayOf<String>()
+    for (cond in set.conditions) {
+        var sqlCond = cond.toSQL()
+        if (sqlCond != "") {
+            sqlConds += sqlCond
+        }
+
+        if (cond.variable2 is Function && cond.variable2.parameters.size == 1) {
+            var condSet = cond.variable2.parameters[0]
+            if (condSet is Set) {
+                sqlConds += getConditionsFromSet(condSet)
+            }
+        }
+    }
+    return sqlConds
+}
+
 fun getConditions(setql: Array<Condition>): String {
-    return ""
+    var sqlConds = arrayOf<String>()
+    for (cond in setql) {
+        if (cond.variable1.label == "/Q" && arrayOf("/c", "=").contains(cond.operator)) {
+            var set = cond.variable2
+            if (set is Set) {
+                sqlConds += getConditionsFromSet(set)
+            }
+        }
+    }
+    if (sqlConds.size == 0) {
+        return ""
+    }
+
+    return "WHERE ${sqlConds.joinToString(" AND ")}\n"
 }
 
 fun getSortByAndOrder(setql: Array<Condition>): String {
@@ -181,19 +212,19 @@ fun getSortByAndOrder(setql: Array<Condition>): String {
 
                                                 if (index1 == index && index2 == "($index+1)") {
                                                     if (operator == ">=") {
-                                                        return "SORT BY $field DESC"
+                                                        return "SORT BY $field DESC\n"
                                                     }
                                                     if (operator == "<=") {
-                                                        return "SORT BY $field ASC"
+                                                        return "SORT BY $field ASC\n"
                                                     }
                                                 }
 
                                                 if (index1 == "($index+1)" && index2 == index) {
                                                     if (operator == ">=") {
-                                                        return "SORT BY $field ASC"
+                                                        return "SORT BY $field ASC\n"
                                                     }
                                                     if (operator == "<=") {
-                                                        return "SORT BY $field DESC"
+                                                        return "SORT BY $field DESC\n"
                                                     }
                                                 }
                                             }
@@ -212,16 +243,19 @@ fun getSortByAndOrder(setql: Array<Condition>): String {
 }
 
 fun getLimit(setql: Array<Condition>): String {
+    for (cond in setql) {
+        if (arrayOf("=", "<=").contains(cond.operator) && cond.variable1 is Function) {
+            if (cond.variable1.label == "abs" && cond.variable1.parameters.size == 1 && cond.variable1.parameters[0].label == "/Q") {
+                return "LIMIT ${cond.variable2.label}"
+            }
+        }
+    }
+
     return ""
 }
 
 fun generateMySql(setql: Array<Condition>): String {
     return """
-        SELECT ${getFields(setql)}
-        FROM ${getSet(setql)}
-        ${getGroupBy(setql)}
-        WHERE ${getConditions(setql)}
-        ${getSortByAndOrder(setql)}
-        ${getLimit(setql)}
-    """
+SELECT ${getFields(setql)}
+FROM ${getSet(setql)}${getGroupBy(setql)}${getConditions(setql)}${getSortByAndOrder(setql)}${getLimit(setql)}${"\n"}"""
 }

@@ -4,9 +4,7 @@ curl localhost:8080/query -X POST -d " /Q /c {v /e S | f(v) = 2} ^ |/Q| = 1"
 
 curl localhost:8080/query -X POST -d " /Q /c {v /e S | f(v) = 2} ^ |/Q| = n"
 
-curl localhost:8080/query -X POST -d " /Q = {v_i /e S | f(v_i) >= f(v_(i+1))} ^ |/Q| = n"
-
-curl localhost:8080/query -X POST -d " /Q = {v | w /e S | f(v) = f(w) ^ g(v) = g(w) }"
+curl localhost:8080/query -X POST -d " /Q = {v_i /e S | f(v_i) >= f(v_i+1)} ^ |/Q| = n"
 
 curl localhost:8080/query -X POST -d " /Q = {v | w /e S | f(v) = f(w) ^ g(v) = g(w) }"
 

@@ -9,8 +9,20 @@ class Condition(
         return "{\"variable1\": ${variable1.toJSON()}, \"operator\": \"$operator\", \"variable2\": ${variable2.toJSON()}}"
     }
 
+    fun toSQL(): String {
+        if (conditionComparators.contains(operator) && variable1 is Function && variable1.parameters.size == 1 && variable1.parameters[0] !is Function && variable1.parameters[0] !is Set) {
+            if (variable2 !is Function && variable2 !is Set) {
+                return "${variable1.parameters[0].label}.${variable1.label} $operator ${variable2.label}"
+            }
+        }
+
+        return ""
+    }
+
     companion object {
         var comparators = arrayOf(">", "<", "=", ">=", "<=", "!=", "/e", "/c")
+        var conditionComparators = arrayOf("=", "<", "<=", ">", ">=")
+
         var predicates = arrayOf("^", "|", ",", "/v")
 
         fun getComparator(s: String, i: Int): String {
