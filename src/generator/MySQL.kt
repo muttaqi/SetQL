@@ -49,7 +49,7 @@ fun getFields(setql: Array<Condition>): String {
                             }
                         }
 
-                        fields += func.label!!
+                        fields += "${func.label!!} AS ${value.label}"
                     }
                 }
             }
@@ -210,7 +210,7 @@ fun getSortByAndOrder(setql: Array<Condition>): String {
                                                 var index1 = param1.split("_")[1]
                                                 var index2 = param2.split("_")[1]
 
-                                                if (index1 == index && index2 == "($index+1)") {
+                                                if (index1 == index && index2 == "$index+1") {
                                                     if (operator == ">=") {
                                                         return "SORT BY $field DESC\n"
                                                     }
@@ -219,7 +219,7 @@ fun getSortByAndOrder(setql: Array<Condition>): String {
                                                     }
                                                 }
 
-                                                if (index1 == "($index+1)" && index2 == index) {
+                                                if (index1 == "$index+1" && index2 == index) {
                                                     if (operator == ">=") {
                                                         return "SORT BY $field ASC\n"
                                                     }
@@ -257,5 +257,6 @@ fun getLimit(setql: Array<Condition>): String {
 fun generateMySql(setql: Array<Condition>): String {
     return """
 SELECT ${getFields(setql)}
-FROM ${getSet(setql)}${getGroupBy(setql)}${getConditions(setql)}${getSortByAndOrder(setql)}${getLimit(setql)}${"\n"}"""
+FROM ${getSet(setql)}
+${getConditions(setql)}${getGroupBy(setql)}${getSortByAndOrder(setql)}${getLimit(setql)}${"\n"}"""
 }

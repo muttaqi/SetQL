@@ -12,7 +12,7 @@ class Condition(
     fun toSQL(): String {
         if (conditionComparators.contains(operator) && variable1 is Function && variable1.parameters.size == 1 && variable1.parameters[0] !is Function && variable1.parameters[0] !is Set) {
             if (variable2 !is Function && variable2 !is Set) {
-                return "${variable1.parameters[0].label}.${variable1.label} $operator ${variable2.label}"
+                return "${variable1.label} $operator ${variable2.label}"
             }
         }
 
