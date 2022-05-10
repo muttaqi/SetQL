@@ -14,7 +14,6 @@ fun Route.queryRouting() {
             var query = call.receiveText()
 
             call.application.environment.log.info("query")
-            println("query")
 
             var output = runQuery(query)
 

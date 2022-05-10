@@ -27,7 +27,6 @@ class Condition(
 
         fun getComparator(s: String, i: Int): String {
             return comparators.fold("") { acc, e ->
-                //println("$acc, $e, ${i + e.length} <= ${s.length}, ${s.substring(i, i + e.length)} == $e")
                 if (i + e.length <= s.length && s.substring(i, i + e.length) == e) {
                     e
                 } else {
@@ -38,7 +37,6 @@ class Condition(
 
         fun getPredicate(s: String, i: Int): String {
             return predicates.fold("") { acc, e ->
-                //println("$acc, $e, ${i + e.length} <= ${s.length}, ${s.substring(i, i + e.length)} == $e")
                 if (i + e.length <= s.length && s.substring(i, i + e.length) == e) {
                     e
                 } else {

@@ -9,7 +9,6 @@ import org.setql.server.syntax.Condition.Companion.getPredicate
 import org.setql.server.syntax.Condition.Companion.getComparator
 
 fun parseSet(s: String, i_: Int): Pair<Set, Int> {
-    println("parseSet $i_")
     var i = i_
 
     while (i < s.length && s[i] == ' ') {
@@ -63,14 +62,12 @@ fun parseSet(s: String, i_: Int): Pair<Set, Int> {
     set.conditions = pair.first
     i = pair.second
 
-    println("61 $i")
     i += 1
 
     return Pair(set, i)
 }
 
 fun parseVariable(s: String, i_: Int): Pair<Variable, Int> {
-    println("parseVariable $i_")
     var i = i_
 
     while (i < s.length && s[i] == ' ') {
@@ -101,8 +98,6 @@ fun parseVariable(s: String, i_: Int): Pair<Variable, Int> {
                     i += 1
                     break
                 }
-
-                println("at ${s[i]}, next param")
 
                 var pair = parseVariable(s, i)
                 params += pair.first
@@ -146,13 +141,10 @@ fun parseVariable(s: String, i_: Int): Pair<Variable, Int> {
         i += 1
     }
 
-    println("126 $i")
-
     return Pair(Variable(s.substring(i_, i).trim()), i)
 }
 
 fun parseCondition(s: String, i_: Int): Pair<Condition, Int> {
-    println("parseCondition $i_")
     var i = i_
 
     while (i < s.length && s[i] == ' ') {
@@ -166,7 +158,6 @@ fun parseCondition(s: String, i_: Int): Pair<Condition, Int> {
     while (i < s.length && s[i] == ' ') {
         i += 1
     }
-    println("136 $i")
 
     var brackets = 0
     var comp = ""
@@ -208,7 +199,6 @@ fun parseCondition(s: String, i_: Int): Pair<Condition, Int> {
 }
 
 fun parseConditions(s: String, i_: Int): Pair<Array<Condition>, Int> {
-    println("parseConditions $i_")
     var i = i_
 
     while (i < s.length && s[i] == ' ') {
@@ -236,11 +226,8 @@ fun parseConditions(s: String, i_: Int): Pair<Array<Condition>, Int> {
 }
 
 fun runQuery(input: String): String {
-    println("runQuery $input")
     var conds = parseConditions(input, 0).first
     var sql = generateMySql(conds)
 
     return sql
-    //for getting query length decrease
-    //return "${input.filter { c -> c != ' ' && c != '/'}.length.toFloat()/sql.filter { c -> c != '\n' }.length}\n"
 }
