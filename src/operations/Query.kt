@@ -225,7 +225,7 @@ fun parseConditions(s: String, i_: Int): Pair<Array<Condition>, Int> {
     return Pair(conditions, i)
 }
 
-fun runQuery(input: String): String {
+fun sqlFromSetQLQuery(input: String): String {
     var conds = parseConditions(input, 0).first
     var sql = generateMySql(conds)
 

@@ -15,7 +15,7 @@ fun Route.queryRouting() {
 
             call.application.environment.log.info("query")
 
-            var output = runQuery(query)
+            var output = sqlFromSetQLQuery(query)
 
             call.respondText(output, status = HttpStatusCode.Accepted)
         }
