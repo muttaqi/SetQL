@@ -1,0 +1,111 @@
+// We can't have SOI and EOI on expr directly, because it is used recursively (e.g. with parentheses)
+setql_expr = _{ SOI ~ ( setql_clauses | set_expr  ) ~ EOI }
+
+setql_clauses = { setql_clause ~ ("," ~ setql_clause)* }
+setql_clause = { set_definition | func_definition | func_declaration }
+
+// --- Function Expressions ---
+func_definition = { symbol ~ "(" ~ symbol ~ ")" ~ "=" ~ val_expr }
+func_declaration = { symbol ~ ":" ~ set_expr ~ maps_to ~ set_expr }
+
+maps_to = { "->" }
+
+// --- Set expressions ---
+set_definition = { symbol ~ "=" ~ set_expr }
+
+set_expr = { set_atom ~ (set_bin_op ~ set_atom)* }
+
+set_bin_op = _{ union | set_minus }
+    set_minus = { "\\" }
+    union = { "/u" }
+
+set_atom = _{ set_operation | set_builder | predefined_set | symbol }
+
+set_builder = { "{" ~ obj_definition ~ "|" ~ obj_clause ~ ( "," ~ obj_clause )* ~ "}" }
+    obj_clause = {in_set | val_clause}
+
+obj_definition = { in_set | obj_expr }
+in_set = { symbol ~ epsilon ~ set_expr }
+
+set_operation = { index | group | join | offset | distinct | update }
+    update = { Upsilon ~ "(" ~ set_expr ~ "," ~ symbol ~ "," ~ val_expr ~ ")" }
+    distinct = { delta ~ "(" ~ set_expr ~ ")" }
+    offset = { omega ~ "(" ~ set_expr ~ "," ~ integer ~ ")" }
+    join = { chi ~ "(" ~ set_expr ~ "," ~ set_expr ~ "," ~ symbol_list ~ ")" }
+    group = { gamma ~ "(" ~ set_expr ~ "," ~ symbol_list ~ ")" }
+    index = { Iota ~ "(" ~ set_expr ~ "," ~ symbol ~ ")" }
+
+predefined_set = { empty | integers | reals | strings }
+    empty = {"{}"}
+    strings = { "/S" }
+    reals = { "/R" }
+    integers = { "/Z" }
+
+// --- Object expressions ---
+obj_expr = { obj_operation | symbol }
+obj_operation = { view }
+    view = { nu ~ "(" ~ symbol_list ~ ")" }
+
+epsilon = { "/e" }
+nu = { "/v" }
+Upsilon = { "/U" }
+delta = { "/d" }
+omega = { "/o" }
+chi = { "/j" }
+gamma = { "/g" }
+Iota = { "/I" }
+
+// --- Value expressions ---
+val_clause = { val_expr ~ bin_comparator ~ val_expr }
+
+bin_comparator = { eq | gt | lt | geq | leq }
+    leq = { "<=" }
+    geq = { ">=" }
+    lt = { "<" }
+    gt = { ">" }
+    eq = { "=" }
+
+val_expr = { num_expr | str_expr | val_operation }
+
+val_operation = { val_operator ~ "(" ~ symbol ~ ")" }
+val_operator = { iota | symbol }
+
+iota = { "/i" }
+
+// --- String expressions ---
+str_expr = { str_atom ~ (str_bin_op ~ str_atom)* }
+
+str_bin_op = _{ concat }
+    concat = { "+" }
+
+str_atom = _{ str_primary }
+str_primary = _{ str | "(" ~ str_expr ~ ")" }
+
+str = { "\"" ~ ANY+ ~ "\"" }
+
+// --- Numerical expressions ---
+num_expr = { num_atom ~ (num_bin_op ~ num_atom)* }
+
+num_bin_op = _{ add | subtract | multiply | divide | modulo }
+    modulo = { "%" }
+    divide = { "/" }
+    multiply = { "*" }
+    subtract = { "-" }
+    add = { "+" }
+
+num_atom = _{ unary_minus? ~ num_primary }
+num_primary = _{ num | "(" ~ num_expr ~ ")" }
+unary_minus = { "-" }
+
+num = { integer ~ ("." ~ integer)? }
+// No whitespace allowed between digits
+integer = @{ ASCII_DIGIT+ }
+
+symbol_list = _{ symbol ~ ("," ~ symbol)* }
+
+symbol = { alpha ~ (alpha | non_alpha)* ~ apostrophe?}
+apostrophe = _{ "'" }
+non_alpha = _{ ASCII_DIGIT | "." }
+alpha = _{ 'a'..'z' | 'A'..'Z' }
+
+WHITESPACE = _{ " " }

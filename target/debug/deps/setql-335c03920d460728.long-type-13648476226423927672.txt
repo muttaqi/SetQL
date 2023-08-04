@@ -1,0 +1,1 @@
+Map<std::slice::Iter<'_, pest::iterators::Pair<'_, parser::Rule>>, for<'a> fn(pest::iterators::Pair<'a, parser::Rule>) -> Box<String> {utils::to_string_box}>
