@@ -1,1 +1,0 @@
-Map<std::slice::Iter<'_, pest::iterators::Pair<'_, parser::Rule>>, for<'a> fn(pest::iterators::Pairs<'a, parser::Rule>) -> ObjectClause {parse_obj_clause}>
